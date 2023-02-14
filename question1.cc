@@ -61,7 +61,8 @@ void printOrder(queue<int> orderOfProcesses, map<int, int> IDFinishTime)
     cout << "," << orderOfProcesses.front() << "(" << IDFinishTime[orderOfProcesses.front()] << ")";
     orderOfProcesses.pop();
   }
-  cout << endl;
+  cout << endl
+       << endl;
 }
 
 void updateTimes(vector<Process> &allProcessID, map<int, int> IDFinishTime)
@@ -79,6 +80,24 @@ void updateTimes(vector<Process> &allProcessID, map<int, int> IDFinishTime)
   cout << endl;
 }
 
+void printAverageTimes(vector<Process> allProcessID)
+{
+  int i;
+  int totalWaitingTime = 0;
+  int totalTurnaroundTime = 0;
+  for (i = 0; i < allProcessID.size(); i++)
+  {
+    totalWaitingTime += allProcessID[i].waitingTime;
+    totalTurnaroundTime += allProcessID[i].turnaroundTime;
+  }
+  float avgWaitingTime = (float)totalWaitingTime / (float)i;
+  float avgTurnaroundTime = (float)totalTurnaroundTime / (float)i;
+
+  cout << "Average waiting time for all processes:    " << avgWaitingTime << endl;
+  cout << "Average turnaround time for all processes: " << avgTurnaroundTime << endl;
+  cout << endl;
+}
+
 int main(int argc, char **argv)
 {
   // Throws error if not given exactly 1 argument
@@ -89,9 +108,8 @@ int main(int argc, char **argv)
     exit(EXIT_FAILURE);
   }
 
-  // Priority queue to have processes in order of arrival time
-  priority_queue<Process, vector<Process>, cmpProcessArrivalTime> arrivalQueue;
-  priority_queue<Process, vector<Process>, cmpProcessID> processIDqueue;
+  priority_queue<Process, vector<Process>, cmpProcessArrivalTime> arrivalQueue; // In order of arrival time
+  priority_queue<Process, vector<Process>, cmpProcessID> processIDqueue;        // In order of ID
 
   ifstream schedulerFile;
   schedulerFile.open(argv[1]);
@@ -136,16 +154,17 @@ int main(int argc, char **argv)
 
   schedulerFile.close(); // Finished reading file, close file
 
-  vector<Process> allProcessArrivalTime; // List to hold all processes for scheduling to take place and iterating
-  vector<Process> allProcessID;          // List to hold all processes in id order, to iterate for termination, turnaround and waiting time
+  vector<Process> allProcessArrivalTime; // In order of arrival time, for scheduling purposes
+  vector<Process> allProcessID;          // In order of ID, to iterate for termination, turnaround and waiting time
 
-  // Populates allProcessArrivalTime and processList with all processes
+  // Populates allProcessArrivalTime in order of arrival times
   while (!arrivalQueue.empty())
   {
     allProcessArrivalTime.push_back(arrivalQueue.top()); // add to all processes
     arrivalQueue.pop();                                  // remove process 1 by 1 from priority queue
   }
 
+  // Populates processList in order of ID
   while (!processIDqueue.empty())
   {
     allProcessID.push_back(processIDqueue.top());
@@ -153,11 +172,11 @@ int main(int argc, char **argv)
   }
 
   // multiadaptive queues
-  queue<Process> q0;
-  queue<Process> q1;
-  queue<Process> q2;
+  queue<Process> q0; // highest priority for processing, will execute process until complete or for 6 seconds
+  queue<Process> q1; // 2nd highest priority for processing, will execute until process complete, preempted or for 12 seconds
+  queue<Process> q2; // lowest priority for processing, will execute until process is complete or preempted
 
-  queue<int> orderOfProcesses; // order of when process is executed
+  queue<int> orderOfProcesses; // order of when process allowed to be executed
   map<int, int> IDFinishTime;  // maps id to termination time
 
   Process *current = NULL;
@@ -246,7 +265,12 @@ int main(int argc, char **argv)
 
     if (current != prev) // check if not-null current process is different previous process
     {
-      orderOfProcesses.push(current->processID);                 // current process is different, place in order of execution
+      // add current process if execution order is empty
+      // add current process if its not the same as previous process
+      if (orderOfProcesses.empty() || (!orderOfProcesses.empty() && orderOfProcesses.back() != current->processID))
+      {
+        orderOfProcesses.push(current->processID);
+      }                                                          // current process is different, place in order of execution
       if (prev != NULL && prev->burstTimeLeft > 0 && timer != 0) // previous process was preempted
       {
         if (prev->queueIn == 0)
@@ -279,6 +303,7 @@ int main(int argc, char **argv)
   }
 
   updateTimes(allProcessID, IDFinishTime);
+  printAverageTimes(allProcessID);
   printOrder(orderOfProcesses, IDFinishTime);
 
   return 0;
