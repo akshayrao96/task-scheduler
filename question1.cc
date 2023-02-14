@@ -98,40 +98,37 @@ int main(int argc, char **argv)
 
   vector<Process> allProcesses; // List to hold all processes
 
-  vector<Process *> processQueue; // List to hold waiting process in scheduler
-
   // Populates allProcesses and processList with all processes
   while (!arrivalQueue.empty())
   {
-    allProcesses.push_back(arrivalQueue.top());   // add to all processes
-    processQueue.push_back(&allProcesses.back()); // add pointer to process
-    arrivalQueue.pop();                           // remove process 1 by 1 from priority queue
+    allProcesses.push_back(arrivalQueue.top()); // add to all processes
+    arrivalQueue.pop();                         // remove process 1 by 1 from priority queue
   }
 
   // multiadaptive queues
-  queue<Process *> q0;
-  queue<Process *> q1;
-  queue<Process *> q2;
+  queue<Process> q0;
+  queue<Process> q1;
+  queue<Process> q2;
 
   queue<Process *> orderOfProcesses; // order of process execution
 
   Process *current = NULL;
-  Process *prev = current;
+  Process *prev = NULL;
 
   int counter = -1;
   int timer = -1;
 
   // starts scheduling and processing each process, using counter as a timer
-  while (!processQueue.empty() || !q0.empty() || !q1.empty() || !q2.empty())
+  while (!allProcesses.empty() || !q0.empty() || !q1.empty() || !q2.empty())
   {
     counter += 1;
     timer -= 1;
 
-    while (!processQueue.empty() && processQueue.front()->arrivalTime == counter)
+    while (!allProcesses.empty() && allProcesses.front().arrivalTime == counter)
     {
-      q0.push(processQueue.front());
-      processQueue.erase(processQueue.begin());
-      current = q0.front();
+      q0.push(allProcesses.front());
+      allProcesses.erase(allProcesses.begin());
+      current = &q0.front();
     }
     if (current == NULL) // current is null, means nothing in queues to process
     {
@@ -162,30 +159,30 @@ int main(int argc, char **argv)
       if (current->queueIn == 0) // move process from q0 to q1
       {
         q0.pop();
-        q1.push(current);
+        q1.push(*current);
         current->queueIn = 1;
       }
       else // move process from q1 to q2
       {
         q1.pop();
-        q2.push(current);
+        q2.push(*current);
         current->queueIn = 2;
       }
     }
 
     if (!q0.empty()) // get current process from front of q0
     {
-      current = q0.front();
+      current = &q0.front();
       current->queueIn = 0;
     }
     else if (!q1.empty()) // if q0 empty, get current process from front of q1
     {
-      current = q1.front();
+      current = &q1.front();
       current->queueIn = 1;
     }
     else if (!q2.empty()) // if q0 and q1 empty, get current process from front of q2
     {
-      current = q2.front();
+      current = &q2.front();
       current->queueIn = 2;
     }
 
@@ -201,15 +198,15 @@ int main(int argc, char **argv)
       {
         if (prev->queueIn == 0)
         {
-          q0.push(prev); // push preempted process to back of q0
+          q0.push(*prev); // push preempted process to back of q0
         }
         else if (prev->queueIn == 1)
         {
-          q1.push(prev); // push preempted process to back of q1
+          q1.push(*prev); // push preempted process to back of q1
         }
         else
         {
-          q2.push(prev); // push preempted process to back of q2
+          q2.push(*prev); // push preempted process to back of q2
         }
       }
     }
