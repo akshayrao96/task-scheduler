@@ -74,7 +74,7 @@ void updateTimes(vector<Process> &allProcessID, map<int, int> IDFinishTime)
     allProcessID[i].terminationTime = IDFinishTime[allProcessID[i].processID];
     allProcessID[i].turnaroundTime = allProcessID[i].terminationTime - allProcessID[i].arrivalTime;
     allProcessID[i].waitingTime = allProcessID[i].turnaroundTime - allProcessID[i].burstTime;
-    cout << setw(4) << allProcessID[i].processID << setw(12) << allProcessID[i].terminationTime << setw(18) << allProcessID[i].waitingTime << endl;
+    cout << setw(4) << allProcessID[i].processID << setw(12) << allProcessID[i].turnaroundTime << setw(17) << allProcessID[i].waitingTime << endl;
   }
   cout << endl;
 }
