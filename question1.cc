@@ -44,7 +44,9 @@ void errorMessage()
 
 void printOrder(queue<int> orderOfProcesses, map<int, int> IDFinishTime)
 {
+  cout << "---ORDER OF PROCESS---" << endl;
   cout << orderOfProcesses.front() << "(" << IDFinishTime[orderOfProcesses.front()] << ")";
+  orderOfProcesses.pop();
   while (!orderOfProcesses.empty())
   {
     cout << "," << orderOfProcesses.front() << "(" << IDFinishTime[orderOfProcesses.front()] << ")";
@@ -201,6 +203,7 @@ int main(int argc, char **argv)
     {
       current = &q2.front();
       current->queueIn = 2;
+      timer = -1; //  ignoring timer when current process executing is in q2
     }
 
     if (current == NULL) // check if there is a current process executing. If not, go to next iteration
