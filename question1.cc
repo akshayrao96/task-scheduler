@@ -42,6 +42,17 @@ void errorMessage()
   cout << "EXAMPLE: ./question1.out <file.txt>" << endl;
 }
 
+void printOrder(queue<int> orderOfProcesses, map<int, int> IDFinishTime)
+{
+  cout << orderOfProcesses.front() << "(" << IDFinishTime[orderOfProcesses.front()] << ")";
+  while (!orderOfProcesses.empty())
+  {
+    cout << "," << orderOfProcesses.front() << "(" << IDFinishTime[orderOfProcesses.front()] << ")";
+    orderOfProcesses.pop();
+  }
+  cout << endl;
+}
+
 int main(int argc, char **argv)
 {
   // Throws error if not given exactly 1 argument
@@ -130,7 +141,10 @@ int main(int argc, char **argv)
     {
       q0.push(allProcesses.front());
       allProcesses.erase(allProcesses.begin());
-      current = &q0.front();
+      if (current == NULL)
+      {
+        current = &q0.front();
+      }
     }
     if (current == NULL) // current is null, means nothing in queues to process
     {
@@ -201,14 +215,17 @@ int main(int argc, char **argv)
       {
         if (prev->queueIn == 0)
         {
-          q0.push(*prev); // push preempted process to back of q0
+          q0.pop();
+          q0.push(*prev); // remove and push preempted process to back of q0
         }
         else if (prev->queueIn == 1)
         {
+          q1.pop();
           q1.push(*prev); // push preempted process to back of q1
         }
         else
         {
+          q2.pop();
           q2.push(*prev); // push preempted process to back of q2
         }
       }
@@ -225,10 +242,7 @@ int main(int argc, char **argv)
     prev = current; // set prev as current after changes in scheduling either from timer or preempt process
   }
 
-  while (!orderOfProcesses.empty())
-  {
-    cout << orderOfProcesses.front() << "(" << IDFinishTime[orderOfProcesses.front()] << ")" << endl;
-    orderOfProcesses.pop();
-  }
+  printOrder(orderOfProcesses, IDFinishTime);
+
   return 0;
 }
