@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <sstream>
 #include <list>
+#include <map>
 
 using namespace std;
 
@@ -110,7 +111,8 @@ int main(int argc, char **argv)
   queue<Process> q1;
   queue<Process> q2;
 
-  queue<Process *> orderOfProcesses; // order of process execution
+  queue<int> orderOfProcesses; // order of process execution
+  map<int, int> IDFinishTime;  // maps id to termination time
 
   Process *current = NULL;
   Process *prev = NULL;
@@ -152,6 +154,7 @@ int main(int argc, char **argv)
         q2.pop();
       }
       current->terminationTime = counter;
+      IDFinishTime[current->processID] = counter;
       current = NULL;
     }
     else if (timer == 0) // else move process to another queue if timer for process expired
@@ -193,7 +196,7 @@ int main(int argc, char **argv)
 
     if (current != prev) // check if not-null current process is different previous process
     {
-      orderOfProcesses.push(current);                            // current process is different, place in order of execution
+      orderOfProcesses.push(current->processID);                 // current process is different, place in order of execution
       if (prev != NULL && prev->burstTimeLeft > 0 && timer != 0) // previous process was preempted
       {
         if (prev->queueIn == 0)
@@ -224,7 +227,7 @@ int main(int argc, char **argv)
 
   while (!orderOfProcesses.empty())
   {
-    cout << orderOfProcesses.front()->processID << "(" << orderOfProcesses.front()->terminationTime << ")" << endl;
+    cout << orderOfProcesses.front() << "(" << IDFinishTime[orderOfProcesses.front()] << ")" << endl;
     orderOfProcesses.pop();
   }
   return 0;
