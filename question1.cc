@@ -93,8 +93,8 @@ void printAverageTimes(vector<Process> allProcessID)
   float avgWaitingTime = (float)totalWaitingTime / (float)i;
   float avgTurnaroundTime = (float)totalTurnaroundTime / (float)i;
 
-  cout << "Average waiting time for all processes:    " << avgWaitingTime << endl;
   cout << "Average turnaround time for all processes: " << avgTurnaroundTime << endl;
+  cout << "Average waiting time for all processes:    " << avgWaitingTime << endl;
   cout << endl;
 }
 
@@ -255,7 +255,6 @@ int main(int argc, char **argv)
     {
       current = &q2.front();
       current->queueIn = 2;
-      timer = -1; //  ignoring timer when current process executing is in q2
     }
 
     if (current == NULL) // check if there is a current process executing. If not, go to next iteration
@@ -270,8 +269,8 @@ int main(int argc, char **argv)
       if (orderOfProcesses.empty() || (!orderOfProcesses.empty() && orderOfProcesses.back() != current->processID))
       {
         orderOfProcesses.push(current->processID);
-      }                                                          // current process is different, place in order of execution
-      if (prev != NULL && prev->burstTimeLeft > 0 && timer != 0) // previous process was preempted
+      }                                                                                                   // current process is different, place in order of execution
+      if (prev != NULL && prev->processID != current->processID && prev->burstTimeLeft > 0 && timer != 0) // previous process was preempted
       {
         if (prev->queueIn == 0)
         {
@@ -298,6 +297,10 @@ int main(int argc, char **argv)
     else if ((current != prev || timer == 0) && current->queueIn == 1) // reset timer if process changed, or timer is 0
     {
       timer = 12;
+    }
+    else if (((current != prev || timer == 0) && current->queueIn == 2))
+    {
+      timer = -1; // reset timer t not be tracked if current process is in q2
     }
     prev = current; // set prev as current after changes in scheduling either from timer or preempt process
   }
