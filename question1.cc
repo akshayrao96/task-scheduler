@@ -48,7 +48,7 @@ public:
 void errorMessage()
 {
   cout << "USAGE: Executable file must take in 1 valid file path" << endl;
-  cout << "EXAMPLE: ./question1.out <file.txt>" << endl;
+  cout << "EXAMPLE: ./question1 <file.txt>" << endl;
 }
 
 void printOrder(queue<int> orderOfProcesses, map<int, int> IDFinishTime)
@@ -108,7 +108,7 @@ int main(int argc, char **argv)
     exit(EXIT_FAILURE);
   }
 
-  priority_queue<Process, vector<Process>, cmpProcessArrivalTime> arrivalQueue; // In order of arrival time
+  priority_queue<Process, vector<Process>, cmpProcessArrivalTime> arrivalQueue; // In order of arrival time, breaking ties with ID
   priority_queue<Process, vector<Process>, cmpProcessID> processIDqueue;        // In order of ID
 
   ifstream schedulerFile;

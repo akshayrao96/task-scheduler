@@ -21,10 +21,10 @@ question1 - executable compiled from question1.cc
 question2 - executable compiled from question2.cc
 
 To compile question1.cc and create executable question1:
-g++ -std=c++11-Wall -Werror -o question1 question1.cc
+g++ -std=c++11 -Wall -Werror -o question1 question1.cc
 
 To compile question2.cc and create executable question2:
-g++ -std=c++11-Wall -Werror -o question2 question2.cc
+g++ -std=c++11 -Wall -Werror -o question2 question2.cc
 
 To run the executable, specify a single file path as an argument. File must be .txt and must be csv values with 3 columns: process id, burst time, and arrival time - in that order. File must also contain at least a single entry.
 
