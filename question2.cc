@@ -80,6 +80,53 @@ void removeFinishedProcess(vector<Process> &readyList)
   }
 }
 
+void printOrder(queue<int> orderOfProcesses, map<int, int> IDFinishTime)
+{
+  cout << "---ORDER OF PROCESS---" << endl;
+  cout << orderOfProcesses.front() << "(" << IDFinishTime[orderOfProcesses.front()] << ")";
+  orderOfProcesses.pop();
+  while (!orderOfProcesses.empty())
+  {
+    cout << "," << orderOfProcesses.front() << "(" << IDFinishTime[orderOfProcesses.front()] << ")";
+    orderOfProcesses.pop();
+  }
+  cout << endl
+       << endl;
+}
+
+void updateTimes(vector<Process> &allProcessID, map<int, int> IDFinishTime)
+{
+  cout << endl;
+  cout << setw(4) << "ID" << setw(18) << "Turnaround time" << setw(15) << "Waiting time" << endl;
+  int i;
+  for (i = 0; i < allProcessID.size(); i++)
+  {
+    allProcessID[i].terminationTime = IDFinishTime[allProcessID[i].processID];
+    allProcessID[i].turnaroundTime = allProcessID[i].terminationTime - allProcessID[i].arrivalTime;
+    allProcessID[i].waitingTime = allProcessID[i].turnaroundTime - allProcessID[i].burstTime;
+    cout << setw(4) << allProcessID[i].processID << setw(12) << allProcessID[i].turnaroundTime << setw(17) << allProcessID[i].waitingTime << endl;
+  }
+  cout << endl;
+}
+
+void printAverageTimes(vector<Process> allProcessID)
+{
+  int i;
+  int totalWaitingTime = 0;
+  int totalTurnaroundTime = 0;
+  for (i = 0; i < allProcessID.size(); i++)
+  {
+    totalWaitingTime += allProcessID[i].waitingTime;
+    totalTurnaroundTime += allProcessID[i].turnaroundTime;
+  }
+  float avgWaitingTime = (float)totalWaitingTime / (float)i;
+  float avgTurnaroundTime = (float)totalTurnaroundTime / (float)i;
+
+  cout << "Average turnaround time for all processes: " << avgTurnaroundTime << endl;
+  cout << "Average waiting time for all processes:    " << avgWaitingTime << endl;
+  cout << endl;
+}
+
 void errorMessage()
 {
   cout << "USAGE: Executable file must take in 1 valid file path" << endl;
@@ -163,13 +210,28 @@ int main(int argc, char **argv)
 
   map<int, int> IDFinishTime; // maps id to termination time
 
-  Process *current = NULL;
+  Process *current = NULL; // points to current process being executed
+  Process *prev = NULL;    // indicates previous process, null means current has changed
+
+  queue<int> orderOfProcesses; // order of when process allowed to be executed
 
   int counter = -1;
 
   while (!readyList.empty() || !allProcessArrivalTime.empty())
   {
     counter += 1;
+    if (current != NULL)
+    {
+      counter == current->arrivalTime ? current->burstTimeLeft -= 0 : current->burstTimeLeft -= 1; // decrement process counter
+
+      if (current->burstTimeLeft == 0)
+      {
+        IDFinishTime[current->processID] = counter;
+        current = NULL;
+        prev = NULL;
+        removeFinishedProcess(readyList);
+      }
+    }
 
     while (!allProcessArrivalTime.empty() && allProcessArrivalTime.front().arrivalTime == counter)
     {
@@ -182,14 +244,19 @@ int main(int argc, char **argv)
       continue;
     }
     current = getLowestBurstTimeProcess(readyList);
-    counter == current->arrivalTime ? current->burstTimeLeft -= 0 : current->burstTimeLeft -= 1; // decrement process counter
-    // if process is complete, get termination time, remove it from readyList
-    if (current->burstTimeLeft == 0)
+
+    // check if current process is different to process last iteration
+    if (current != prev && (prev == NULL || current->processID != prev->processID))
     {
-      IDFinishTime[current->processID] = counter;
-      removeFinishedProcess(readyList);
-      current = NULL;
+      orderOfProcesses.push(current->processID);
+      prev = current;
     }
+    // if process is complete, get termination time, remove it from readyList
   }
+
+  updateTimes(allProcessID, IDFinishTime);
+  printAverageTimes(allProcessID);
+  printOrder(orderOfProcesses, IDFinishTime);
+
   return 0;
 }
