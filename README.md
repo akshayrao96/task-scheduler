@@ -1,37 +1,69 @@
-README
+# Process Scheduler Simulation
 
-This zip file contains the files and programs for executing a process schedulers given a list of processes in csv format as a text file:
-question1.cc
-question1
-question2.cc
-question2
-jobs.txt
+This repository contains the necessary files and programs to simulate process scheduling algorithms using a list of processes provided in a CSV-formatted text file. The simulation covers two scheduling algorithms: Multiqueue Adaptive Scheduling (MAS) and Shortest-Remaining-Time-First (SRTF).
 
-The programs are split into 2 c++ files:
+## Contents
 
-question1.cc - program for question 1, Multiqueue Adaptive Scheduling (MAS)
-question2.cc - program for question 2, Shortest-Remaining-Time-First (SRTF) is question2.cc
+- `mas.cc`: C++ source file for MAS scheduling simulation.
+- `srtf.cc`: C++ source file for SRTF scheduling simulation.
+- `jobs.txt`: Sample input file containing process data in CSV format.
+- Output Screenshots: Visual proof of the program's execution results.
 
-both question1.cc (MAS) and question2.cc (SRTF) print the following:
-1.) Termination and waiting times of all processes
-2.) Average termination time and average waiting time
-3.) Order in which processes were allowed to execute on the CPU
+## Scheduling Algorithms
 
-question1 - executable compiled from question1.cc
-question2 - executable compiled from question2.cc
+### Multiqueue Adaptive Scheduling (MAS)
 
-To compile question1.cc and create executable question1:
-g++ -std=c++11 -Wall -Werror -o question1 question1.cc
+Implemented in `mas.cc`, this algorithm dynamically adjusts queues based on process behavior, optimizing for both I/O-bound and CPU-bound processes.
 
-To compile question2.cc and create executable question2:
-g++ -std=c++11 -Wall -Werror -o question2 question2.cc
+### Shortest-Remaining-Time-First (SRTF)
 
-To run the executable, specify a single file path as an argument. File must be .txt and must be csv values with 3 columns: process id, burst time, and arrival time - in that order. File must also contain at least a single entry.
+Implemented in `srtf.cc`, this preemptive scheduling algorithm selects the process with the shortest remaining execution time to run next.
 
-If invalid file is given, an error is printed, along with usage details and an example command of the executable
+## Features
 
-For example, jobs.txt is in the same directory as question1, so use the following command to see MAS scheduler:
-./question1 jobs.txt
+Both `mas.cc` (MAS) and `srtf.cc` (SRTF) programs output the following details:
 
-For example, jobs.txt is in the same directory as question2, so use the following command to see SRTF scheduler:
-./question1 jobs.txt
+1. Termination and waiting times for all processes.
+2. Average termination time and average waiting time.
+3. Execution order of processes on the CPU.
+
+## Compilation Instructions
+
+To compile each program and create their respective executables, use the following commands:
+
+- For Multilevel Queue scheduling task simulation (`mas.cc`):
+
+  ```sh
+  g++ -std=c++11 -Wall -Werror -o ./main/mas ./main/mas.cc
+  ```
+
+- For Shortest Reamining Time First task simulation (`mas.cc`):
+
+```sh
+  g++ -std=c++11 -Wall -Werror -o ./main/srtf ./main/srtf.cc
+```
+
+## Running the Simulations
+
+To run the simulations, specify the path to a single text file as an argument. This file must be in CSV format with three columns: process ID, burst time, and arrival time, in that order. The file must contain at least one process entry.
+Example Commands
+
+    For MAS scheduling simulation:
+
+```sh
+./main/mas ./input/jobs.txt
+```
+
+For SRTF scheduling simulation:
+
+```sh
+./main/srtf ./input/jobs.txt
+```
+
+If an invalid file is provided, the program will print an error message, usage details, and an example command.
+
+## Output
+
+![MAS Scheduler Output Example](./img/mas-output.png)
+
+![SRTF Scheduler Output Example](./img/srtf-output.png)
