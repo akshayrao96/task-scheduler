@@ -1,4 +1,4 @@
-# Process Scheduler Simulation
+# Task Scheduler Simulation
 
 This repository contains the necessary files and programs to simulate process scheduling algorithms using a list of processes provided in a CSV-formatted text file. The simulation covers two scheduling algorithms: Multiqueue Adaptive Scheduling (MAS) and Shortest-Remaining-Time-First (SRTF).
 
