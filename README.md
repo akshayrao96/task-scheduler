@@ -61,9 +61,3 @@ For SRTF scheduling simulation:
 ```
 
 If an invalid file is provided, the program will print an error message, usage details, and an example command.
-
-## Output
-
-![MAS Scheduler Output Example](./img/mas-output.png)
-
-![SRTF Scheduler Output Example](./img/srtf-output.png)
